@@ -13,7 +13,7 @@ export const questions: Array<{
     options: ["Less than $10,000", "$10,000 - $20,000", "More than $20,000"],
     type: "radio",
     title: "Debt",
-    description: "Let's start by understanding your debt situation.",
+    description: "Let&apos;s start by understanding your debt situation.",
     name: "debt",
   },
   {
@@ -27,14 +27,14 @@ export const questions: Array<{
     ],
     type: "radio",
     title: "Income",
-    description: "Now, let's look at your income.",
+    description: "Now, let&apos;s look at your income.",
     name: "income",
   },
   {
-    question: "What's your email?",
+    question: "What&apos;s your email?",
     type: "email",
     title: "Contact",
-    description: "Finally, we'll need your contact information.",
+    description: "Finally, we&apos;ll need your contact information.",
     name: "email",
   },
 ];
