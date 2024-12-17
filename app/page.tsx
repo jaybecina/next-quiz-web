@@ -1,101 +1,120 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useQuizStore } from "@/store/quizStore";
+import Loader from "@/components/Loader";
+import QuizQuestion from "@/components/QuizQuestion";
+import CongratsPage from "@/components/CongratsPage";
+import Stepper from "@/components/Stepper";
+import { QuizSchema } from "@/lib/schema";
 import Image from "next/image";
+import BGImage from "@/assets/images/bg-img.jpg";
+
+const questions: Array<{
+  question: string;
+  options?: string[];
+  type: "radio" | "email";
+  title: string;
+  description: string;
+  name: keyof QuizSchema;
+}> = [
+  {
+    question: "How much debt do you owe?",
+    options: ["Less than $10,000", "$10,000 - $20,000", "More than $20,000"],
+    type: "radio",
+    title: "Debt",
+    description: "Let's start by understanding your debt situation.",
+    name: "debt",
+  },
+  {
+    question: "What is your gross annual income?",
+    options: [
+      "Under $25,000",
+      "$25,000 - $50,000",
+      "$50,000 - $75,000",
+      "$75,000 - $100,000",
+      "More than $100,000",
+    ],
+    type: "radio",
+    title: "Income",
+    description: "Now, let's look at your income.",
+    name: "income",
+  },
+  {
+    question: "What's your email?",
+    type: "email",
+    title: "Contact",
+    description: "Finally, we'll need your contact information.",
+    name: "email",
+  },
+];
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const { currentQuestion, answers } = useQuizStore();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    const interval = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress === 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return Math.min(oldProgress + 10, 100);
+      });
+    }, 200);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentQuestion === questions.length) {
+      console.log("Quiz completed. Answers:", answers);
+    }
+  }, [currentQuestion, answers]);
+
+  if (loading) {
+    return <Loader progress={progress} />;
+  }
+
+  if (currentQuestion === questions.length) {
+    return <CongratsPage />;
+  }
+
+  const currentQuestionData = questions[currentQuestion];
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <Image
+        src={BGImage}
+        alt="Background Image"
+        fill
+        style={{ objectFit: "cover", objectPosition: "center" }}
+        className="absolute top-0 left-0"
+      />
+      <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-2xl backdrop-blur-sm relative z-10">
+        <Stepper
+          steps={questions.map((q) => ({
+            title: q.title,
+            description: q.description,
+          }))}
+          currentStep={currentQuestion}
+        />
+        <QuizQuestion
+          question={currentQuestionData.question}
+          options={currentQuestionData.options}
+          type={currentQuestionData.type}
+          name={currentQuestionData.name}
+        />
+      </div>
     </div>
   );
 }
