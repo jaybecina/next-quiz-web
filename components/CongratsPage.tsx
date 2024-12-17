@@ -26,7 +26,8 @@ const CongratsPage = () => {
       <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-2xl text-center space-y-4 backdrop-blur-sm">
         <Stepper steps={steps} currentStep={3} />
         <h1 className="text-3xl font-bold">Congratulations!</h1>
-        <p className="text-xl">You've completed the quiz.</p>
+        <p className="text-xl">You&apos;ve completed the quiz.</p>{" "}
+        {/* Single quote escaped here */}
         <div className="space-y-2">
           <p>Your answers:</p>
           <pre className="bg-gray-100 p-4 rounded-md text-left overflow-x-auto">
